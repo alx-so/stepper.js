@@ -108,7 +108,6 @@ export default class Stepper {
          * 0
          * get from cache
          * get from param
-         * 
          */
 
         return 1;
