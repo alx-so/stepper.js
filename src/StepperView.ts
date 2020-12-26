@@ -1,5 +1,5 @@
-import StepperClassNames from "../StepperClassNames";
-import { tag } from "../utils";
+import StepperClassNames from "./StepperClassNames";
+import { tag } from "./utils";
 
 export default class StepperView {
     private stepElems: Element[] = [];
