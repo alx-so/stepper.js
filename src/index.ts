@@ -42,7 +42,11 @@ export default class Stepper {
     }
 
     public stepTo(step: number, cb?: (step: number) => void): void {
-        this.runStepChange(this.currentStep, step, cb);
+        const ok = this.runStepChange(this.currentStep, step, cb);
+
+        if (!ok) {
+            console.warn(`[Stepper.js]: transiion failed to step: ${step}. Looks like your step number is not within possible range.`);
+        }
     }
 
     // #endregion
