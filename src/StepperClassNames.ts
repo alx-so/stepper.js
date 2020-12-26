@@ -5,6 +5,7 @@ enum StepperClassNames {
     itemActive = 'is-active',
 
     progress = 'stepper-progress',
+    progressItem = 'stepper-progress-item'
 }
 
 export default StepperClassNames;

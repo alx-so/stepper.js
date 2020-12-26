@@ -1,5 +1,5 @@
 import { Options, DefOptions } from './options';
-import ProgressBar from './ProgressBar';
+import StepperView from './components/StepperView';
 import { tag } from './utils';
 
 import StepperClassNames from './StepperClassNames'
@@ -9,22 +9,23 @@ export default class Stepper {
         'change': []
     };
 
-    private progressBar?: ProgressBar;
+    private stepperView: StepperView;
+    private progressView?: StepperView;
     private currentStep: number;
     private stepsCount: number;
-    private stepElems: Element[] = [];
-    private container: HTMLElement;
+    private wrapper: HTMLElement;
     private options: Options;
 
-    constructor(stepsContainer: HTMLElement, opts: Options) {
+    constructor(container: HTMLElement, opts: Options) {
         this.options = { ...DefOptions, ...opts };
-        this.container = this.setup(stepsContainer, this.options);
-
+        this.stepsCount = this.getStepsCount(container);
+        this.wrapper = this.setup(container, this.options);
         this.currentStep = this.getInitialStep();
+
         this.performStepChange(null, this.currentStep);
         this.onStepChangeCall(this.handleStepChangeCall.bind(this));
 
-        if (!this.isStepsHTMLStructureValid(this.container)) {
+        if (!this.isStepsHTMLStructureValid(this.wrapper)) {
             throw new Error();
         }
     }
@@ -40,18 +41,15 @@ export default class Stepper {
     }
 
     private setup(container: HTMLElement, opts: Options): HTMLElement {
-        this.stepsCount = this.getStepsCount(container);
         const wrapper = tag('div', { attr: { class: StepperClassNames.container } });
+        this.stepperView = new StepperView(container.children);
 
-        if (opts.progress) {
-            this.progressBar = this.setupProgressBar(wrapper);
-        }
-
-        wrapper.appendChild(this.setupStepperItems(container));
+        if (opts.progress) this.insertProgressView(wrapper, container.children);
 
         /**
          * insert new HTML
          */
+        wrapper.appendChild(this.stepperView.getHTML());
         container.insertAdjacentElement('beforebegin', wrapper);
 
         /**
@@ -62,41 +60,15 @@ export default class Stepper {
         return wrapper;
     }
 
-    private setupInitialState(step: number): void {
-        this.setStepItemActive(null, this.currentStep);
-    }
-
-    private setupStepperItems(srcContainer: HTMLElement): HTMLElement {
-        const inner = tag('div', { attr: { class: StepperClassNames.inner } });
-
-        Array.prototype.forEach.call(srcContainer.children, (el: HTMLElement) => {
-            inner.appendChild(el.cloneNode(true));
-
-            const stepEl = inner.children[inner.childElementCount - 1];
-
-            this.stepElems.push(stepEl);
-
-            stepEl.classList.add(StepperClassNames.item);
-        });
-
-        return inner;
-    }
-
-    private setupProgressBar(wrapper: HTMLElement): ProgressBar {
-        const el = tag('div', {
-            attr: { 'class': StepperClassNames.progress }
-        });
-
-        const pb = new ProgressBar(el as HTMLElement, this.stepsCount);
+    private insertProgressView(wrapper: HTMLElement, steps: HTMLCollection) {
+        this.progressView = new StepperView(steps, true);
 
         if (!this.options.progressContainer) {
-            wrapper.insertAdjacentElement('afterbegin', pb.container);
+            wrapper.insertAdjacentElement('afterbegin', this.progressView.getHTML());
         } else {
             this.options.progressContainer.innerHTML = '';
-            this.options.progressContainer.appendChild(pb.container);
+            this.options.progressContainer.appendChild(this.progressView.getHTML());
         }
-
-        return pb;
     }
 
     private getStepsCount(container: HTMLElement): number {
@@ -118,8 +90,8 @@ export default class Stepper {
     }
 
     private performStepChange(prev: number, next: number): void {
-        this.setProgressItemActive(next);
-        this.setStepItemActive(prev, next);
+        this.setProgressItemActive(prev, next);
+        this.stepperView.setStep(prev, next);
     }
 
     private onStepChangeCall(cb: () => any): void {
@@ -138,21 +110,10 @@ export default class Stepper {
         return step === this.stepsCount;
     }
 
-    private setProgressItemActive(step: number) {
-        if (!this.progressBar) return;
+    private setProgressItemActive(prev, next: number) {
+        if (!this.progressView) return;
 
-        this.progressBar.setStep(step);
-    }
-
-    private setStepItemActive(prevStep: number, nextStep: number) {
-        if (prevStep) {
-            this.stepElems[prevStep - 1].classList.remove(StepperClassNames.itemActive);
-        }
-
-        if (nextStep) {
-            this.stepElems[nextStep - 1].classList.add(StepperClassNames.itemActive);
-            this.container.setAttribute('active-step', nextStep.toString());
-        }
+        this.progressView.setStep(prev, next);
     }
 
     private canStepNext(): boolean {
