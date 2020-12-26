@@ -33,6 +33,10 @@ export default class Stepper {
 
     // #region Public API
 
+    public getCurrentStep(): number {
+        return this.currentStep;
+    }
+
     public prev(cb?: (step: number) => void): void {
         this.runStepChange(this.currentStep, this.currentStep - 1, cb);
     }
@@ -111,6 +115,8 @@ export default class Stepper {
     }
 
     private runStepChange(prev: number, next: number, cb?: (step: number) => void): boolean {
+        next = Number.parseInt(next as any);
+
         const ok = this.isStepValid(next);
 
         if (!ok) return;
@@ -124,6 +130,18 @@ export default class Stepper {
     }
 
     private isStepValid(step: number): boolean {
+        /**
+         * Make sure value is always a number
+         */
+        if (typeof step !== 'number' || !Number.isFinite(step)) {
+            console.warn(`[Stepper.js] supplied step value is not a number`);
+
+            return;
+        }
+
+        /**
+         * Make sure step is in steps range
+         */
         return step >= 1 && step <= this.stepsCount;
     }
 
@@ -135,12 +153,6 @@ export default class Stepper {
 
     private canStepNext(): boolean {
         // run custom validation
-
-        return true;
-    }
-
-    private canStepPrev(): boolean {
-        // run custom validator
 
         return true;
     }
