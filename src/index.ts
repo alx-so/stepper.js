@@ -1,5 +1,5 @@
 import { Options, DefOptions } from './options';
-import StepperView from './components/StepperView';
+import StepperView from './StepperView';
 import { tag } from './utils';
 
 import StepperClassNames from './StepperClassNames'
@@ -30,15 +30,23 @@ export default class Stepper {
         }
     }
 
-    public prev() {
-        if (this.isFirstStep(this.currentStep) || !this.canStepPrev()) return;
-        this.runStepChange(this.currentStep, --this.currentStep);
+
+    // #region Public API
+
+    public prev(cb?: (step: number) => void): void {
+        this.runStepChange(this.currentStep, this.currentStep - 1, cb);
     }
 
-    public next() {
-        if (this.isLastStep(this.currentStep) || !this.canStepNext()) return;
-        this.runStepChange(this.currentStep, ++this.currentStep);
+    public next(cb?: (step: number) => void): void {
+        this.runStepChange(this.currentStep, this.currentStep + 1, cb);
     }
+
+    public stepTo(step: number, cb?: (step: number) => void): void {
+        this.runStepChange(this.currentStep, step, cb);
+    }
+
+    // #endregion
+
 
     private setup(container: HTMLElement, opts: Options): HTMLElement {
         const wrapper = tag('div', { attr: { class: StepperClassNames.container } });
@@ -98,16 +106,21 @@ export default class Stepper {
         this.eventListenters.change.push(cb);
     }
 
-    private runStepChange(prev: number, next: number): void {
+    private runStepChange(prev: number, next: number, cb?: (step: number) => void): boolean {
+        const ok = this.isStepValid(next);
+
+        if (!ok) return;
+
+        this.currentStep = next;
         this.eventListenters.change.forEach(cb => setTimeout(() => cb(prev, next), 0));
+
+        if (cb && typeof cb === 'function') cb(next);
+
+        return ok;
     }
 
-    private isFirstStep(step: number): boolean {
-        return step === 1;
-    }
-
-    private isLastStep(step: number): boolean {
-        return step === this.stepsCount;
+    private isStepValid(step: number): boolean {
+        return step >= 1 && step <= this.stepsCount;
     }
 
     private setProgressItemActive(prev, next: number) {
