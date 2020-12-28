@@ -128,6 +128,7 @@ export default class Stepper {
 
         return this.options.startStep;
     }
+    
 
     private handleStepChangeCall(prev: number, next: number): void {
         this.currentStep = next;
