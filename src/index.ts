@@ -12,6 +12,7 @@ export default class Stepper {
     private stepsCount: number;
     private wrapper: HTMLElement;
     private options: Options;
+    private frozen: boolean;
 
     constructor(container: HTMLElement, opts: Options) {
         this.options = { ...DefOptions, ...opts };
@@ -28,8 +29,37 @@ export default class Stepper {
         this.performStepChange(null, this.currentStep);
     }
 
-
     // #region Public API
+
+    public destroy(): void {
+        for (let key in this) {
+            // if (key === 'options') continue;
+            delete this[key];
+        }
+
+        // cleanup prototype chain
+        let p = Object.getPrototypeOf(this);
+        while(p) {
+            for (let key in p) {
+                delete p[key];
+            }
+
+            p = Object.getPrototypeOf(p);
+        }
+    }
+
+    public reset(): void {
+        this.frozen = false;
+        this.performStepChange(this.currentStep, 1);
+    }
+
+    public isFrozen(): boolean {
+        return this.frozen;
+    }
+
+    public freeze(isFrozen: boolean): void {
+        this.frozen = isFrozen;
+    }
 
     public getCurrentStep(): number {
         return this.currentStep;
@@ -116,8 +146,14 @@ export default class Stepper {
     private performStepChange(prev: number, next: number, cb?: (step: number) => void): boolean {
         next = Number.parseInt(next as any);
 
-        const ok = this.isStepValid(next) && this.isStepChangeValid(prev, next);
+        if (this.frozen) {
+            console.warn('[Stepper.js] is frozen');
 
+            return;
+        }
+
+        const ok = this.isStepValid(next) && this.isStepChangeValid(prev, next);
+        
         if (!ok) return;
 
         this.eventListenters.change.forEach(cb => setTimeout(() => cb(prev, next), 0));
