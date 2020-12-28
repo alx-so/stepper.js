@@ -9,5 +9,5 @@ export interface Options {
 
 export const DefOptions: Options = {
     window: typeof window !== 'undefined' ? window : null,
-    startStep: 0
+    startStep: 1
 }

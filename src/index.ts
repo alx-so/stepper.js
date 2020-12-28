@@ -82,12 +82,14 @@ export default class Stepper {
 
     private getInitialStep(): number {
         /**
-         * 0
          * get from cache
          * get from param
          */
 
-        return this.options.startStep;
+        /**
+         * Steps HTMLElement[] items index is zero-based.
+         */
+        return this.options.startStep - 1;
     }
 
     private handleStepChangeCall(prev: number, next: number): void {
