@@ -3,7 +3,7 @@ export interface Step {
     elem: Element;
 }
 
-export default class StepperViewBase {
+export default class Stepper {
     private steps: HTMLCollection;
     private prevStep: Step;
     private currentStep: Step;

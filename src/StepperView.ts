@@ -1,8 +1,8 @@
 import ProgressView from "./ProgressView";
 import StepperClassNames from "./StepperClassNames";
-import StepperViewBase, { Step } from "./StepperViewBase";
+import Stepper, { Step } from "./Stepper";
 
-export default class StepperView extends StepperViewBase {
+export default class StepperView extends Stepper {
     private progress?: ProgressView;
     
     constructor(steps: HTMLCollection) {
