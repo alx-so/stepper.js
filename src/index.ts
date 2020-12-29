@@ -1,7 +1,7 @@
 import { Options, DefOptions } from './options';
+import { Step } from './Stepper';
 import StepperView from './StepperView';
 import ProgressView from './ProgressView';
-import { Step } from './StepperViewBase';
 
 export default class Stepper {
     private eventListenters = { 'change': [] };

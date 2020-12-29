@@ -1,4 +1,4 @@
-import { Step } from "./StepperViewBase";
+import { Step } from "./Stepper";
 
 export interface Options {
     window: Window | null;
