@@ -1,6 +1,7 @@
 import { Options, DefOptions } from './options';
 import StepperView from './StepperView';
 import ProgressView from './ProgressView';
+import { Step } from './StepperViewBase';
 
 export default class Stepper {
     private eventListenters = { 'change': [] };
@@ -12,7 +13,7 @@ export default class Stepper {
         this.options = { ...DefOptions, ...opts };
         this.setup(container, this.options);
         this.onStepChangeCall(this.handleStepChangeCall.bind(this));
-        this.performStepChange(this.getInitialStep());
+        this.performStepChange(this.getInitialStep().index);
     }
 
     // #region Public API
@@ -47,23 +48,23 @@ export default class Stepper {
         this.frozen = isFrozen;
     }
 
-    public getCurrentStep(): number {
-        return this.stepperView.getCurrentStepIndex();
+    public getCurrentStep(): Step {
+        return this.stepperView.getCurrentStep();
     }
 
-    public prev(cb?: (step: number) => void): void {
-        this.performStepChange(this.stepperView.getCurrentStepIndex() - 1, cb);
+    public prev(cb?: (step: Step) => void): void {
+        this.performStepChange(this.stepperView.getCurrentStep().index - 1, cb);
     }
 
-    public next(cb?: (step: number) => void): void {
-        this.performStepChange(this.stepperView.getCurrentStepIndex() + 1, cb);
+    public next(cb?: (step: Step) => void): void {
+        this.performStepChange(this.stepperView.getCurrentStep().index + 1, cb);
     }
 
-    public stepTo(step: number, cb?: (step: number) => void): void {
-        const ok = this.performStepChange(step, cb);
+    public stepTo(stepIndex: number, cb?: (step: Step) => void): void {
+        const ok = this.performStepChange(stepIndex, cb);
 
         if (!ok) {
-            console.warn(`[Stepper.js]: transiion failed to step: ${step}. Looks like your step number is not within possible range.`);
+            console.warn(`[Stepper.js]: transiion failed to step: ${stepIndex}. Looks like your step index is not within possible range.`);
         }
     }
 
@@ -80,7 +81,7 @@ export default class Stepper {
         }
     }
 
-    private getInitialStep(): number {
+    private getInitialStep(): Step {
         /**
          * get from cache
          * get from param
@@ -89,10 +90,10 @@ export default class Stepper {
         /**
          * Steps HTMLElement[] items index is zero-based.
          */
-        return this.options.startStep - 1;
+        return this.stepperView.getStep(this.options.startStep);
     }
 
-    private handleStepChangeCall(prev: number, next: number): void {
+    private handleStepChangeCall(prev: Step, next: Step): void {
         this.stepperView.setStepActive(next);
     }
 
@@ -100,9 +101,11 @@ export default class Stepper {
         this.eventListenters.change.push(cb);
     }
 
-    private performStepChange(next: number, cb?: (step: number) => void): boolean {
-        let prev = this.stepperView.getCurrentStepIndex();
-        next = Number.parseInt(next as any);
+    private performStepChange(nextIndex: number, cb?: (step: Step) => void): boolean {
+        nextIndex = Number.parseInt(nextIndex as any);
+
+        let prev = this.stepperView.getCurrentStep();
+        let next = this.stepperView.getStep(nextIndex)
 
         if (this.frozen) {
             console.warn('[Stepper.js] is frozen');
@@ -124,7 +127,7 @@ export default class Stepper {
     /**
      * Custom validator supplied by user
      */
-    private isStepChangeValid(prev: number, next: number): boolean {
+    private isStepChangeValid(prev: Step, next: Step): boolean {
         if (!this.options.validateStepChange || 
             typeof this.options.validateStepChange !== 'function') return true;
 

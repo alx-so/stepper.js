@@ -1,6 +1,6 @@
 import ProgressView from "./ProgressView";
 import StepperClassNames from "./StepperClassNames";
-import StepperViewBase from "./StepperViewBase";
+import StepperViewBase, { Step } from "./StepperViewBase";
 
 export default class StepperView extends StepperViewBase {
     private progress?: ProgressView;
@@ -8,14 +8,15 @@ export default class StepperView extends StepperViewBase {
     constructor(steps: HTMLCollection) {
         super(steps);
 
-        this.setup(this.getSteps());
+        this.setup(this.getStepsHtml());
     }
 
-    public setStepActive(index: number): void {
+    public setStepActive(step: Step): void {
+        const { index } = step;
         const [prev, next] = this.setStep(index);
 
-        if (prev) prev.classList.remove(StepperClassNames.itemActive);
-        if (next) next.classList.add(StepperClassNames.itemActive);
+        if (prev) prev.elem.classList.remove(StepperClassNames.itemActive);
+        if (next) next.elem.classList.add(StepperClassNames.itemActive);
 
         if (this.progress) {
             this.progress.setActive(index);

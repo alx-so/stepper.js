@@ -1,13 +1,15 @@
+import { Step } from "./StepperViewBase";
+
 export interface Options {
     window: Window | null;
     startStep: number;
     progress?: boolean;
     progressNavEnabled?: boolean;
     progressContainer?: HTMLElement;
-    validateStepChange?: (prev: number, next: number) => boolean;
+    validateStepChange?: (prev: Step, next: Step) => boolean;
 }
 
 export const DefOptions: Options = {
     window: typeof window !== 'undefined' ? window : null,
-    startStep: 1
+    startStep: 0
 }
