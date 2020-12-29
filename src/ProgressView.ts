@@ -3,11 +3,11 @@ import { tag } from "./utils";
 
 export default class ProgressView {
     private container: HTMLElement;
-    private steps: HTMLElement[];
+    private progressItems: HTMLElement[];
 
     constructor(stepsCount: number, container?: HTMLElement) {
         this.container = this.setupContainer(container);
-        this.steps = this.setupItems(stepsCount, this.container);
+        this.progressItems = this.setupItems(stepsCount, this.container);
     }
 
     public getHTML(): HTMLElement {
@@ -15,11 +15,27 @@ export default class ProgressView {
     }
 
     public setActive(index: number): void {
-        const el = this.steps[index];
+        if (!this.progressItems[index]) return;
 
-        if (el) {
-            el.classList.add('is-active');
+        /**
+         * Assume that 'all' prev items is active and dont loop over all items. 
+         * Begin from target index.
+         */
+        let i = (index <= 0 || !this.isPrevItemActive(index)) ? 0 : index;
+
+        while(i <= this.progressItems.length - 1) {
+            let item = this.progressItems[i];
+
+            if (i <= index) item.classList.add('is-active');
+            if (i > index) item.classList.remove('is-active');
+
+            i++;
         }
+    }
+
+    private isPrevItemActive(index: number) {
+        let prev = index - 1;
+        return prev < 0 ? false : this.progressItems[prev].classList.contains('is-active');
     }
 
     private setupContainer(container?: HTMLElement) {

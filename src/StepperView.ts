@@ -12,6 +12,8 @@ export default class StepperView extends Stepper {
     }
 
     public setStepActive(step: Step): void {
+        if (!step) return;
+
         const { index } = step;
         const [prev, next] = this.setStep(index);
 
@@ -19,7 +21,7 @@ export default class StepperView extends Stepper {
         if (next) next.elem.classList.add(StepperClassNames.itemActive);
 
         if (this.progress) {
-            this.progress.setActive(index);
+            this.progress.setActive(next.index);
         }
     }
 
