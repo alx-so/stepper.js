@@ -1,19 +1,24 @@
 import { Options, DefOptions } from './options';
 import { Step } from './Stepper';
-import StepperView from './StepperView';
-import ProgressView, { ProgressOptions } from './ProgressView';
+import StepperView, { Opts as StepperViewOpts } from './StepperView';
+
+interface State {
+    isFrozen: boolean,
+    step: Step
+}
 
 export default class Stepper {
     private eventListenters = { 'change': [] };
     private stepperView: StepperView;
     private options: Options;
-    private frozen: boolean;
+    private state: State;
 
     constructor(container: HTMLElement, opts: Options) {
         this.options = { ...DefOptions, ...opts };
-        this.setup(container, this.options);
-        this.onStepChangeCall(this.handleStepChangeCall.bind(this));
-        this.performStepChange(this.getInitialStep().index);
+        this.state = this.getInitialState();
+        this.stepperView = new StepperView(container, this.composeStepperViewOpts(this.options));
+
+        this.onStateChange(this.handleStateChange.bind(this));
     }
 
     // #region Public API
@@ -36,78 +41,64 @@ export default class Stepper {
     }
 
     public reset(): void {
-        this.frozen = false;
-        this.performStepChange(0);
+        const step = this.stepperView.getStep(0);
+        this.setState({...this.state, isFrozen: false, step });
     }
 
     public isFrozen(): boolean {
-        return this.frozen;
+        return this.state.isFrozen;
     }
 
     public freeze(isFrozen: boolean): void {
-        this.frozen = isFrozen;
+        this.setState({...this.state, isFrozen });
     }
 
     public getCurrentStep(): Step {
-        return this.stepperView.getCurrentStep();
+        return this.state.step;
     }
 
     public prev(): void {
         this.performStepChange(this.stepperView.getCurrentStep().index - 1);
+
     }
 
     public next(): void {
         this.performStepChange(this.stepperView.getCurrentStep().index + 1);
     }
 
-    public stepTo(stepIndex: number): void {
-        this.performStepChange(stepIndex);
+    public stepTo(index: number): void {
+        this.performStepChange(index);
     }
 
     // #endregion
 
-    private setup(container: HTMLElement, opts: Options): void {
-        this.stepperView = new StepperView(container);
-        if (opts.progress) {
-            this.setupProgress(opts.progress);
+    private composeStepperViewOpts(opts: Options): StepperViewOpts {
+        return {
+            index: opts.startStep,
+            progress: opts.progress,
+            progressClickHandler: (n: number) => { this.performStepChange(n) }
         }
     }
 
-    private setupProgress(opts: boolean | ProgressOptions): void {
-        const p = new ProgressView(this.stepperView.getStepsCount(), opts);
-        this.stepperView.setProgress(p);
-        if (p.getOpts().navEnabled) p.onClick = n => this.performStepChange(n);
+    private handleStateChange(prev: State, next: State): void {
+        this.stepperView.setStepActive(next.step.index);
     }
 
-    private getInitialStep(): Step {
-        /**
-         * get from cache
-         * get from param
-         */
-
-        /**
-         * Steps HTMLElement[] items index is zero-based.
-         */
-        return this.stepperView.getStep(this.options.startStep);
-    }
-
-    private handleStepChangeCall(prev: Step, next: Step): void {
-        this.stepperView.setStepActive(next);
-    }
-
-    private onStepChangeCall(cb: () => any): void {
+    private onStateChange(cb: () => any): void {
         this.eventListenters.change.push(cb);
     }
 
     private performStepChange(nextIndex: number): boolean {
         nextIndex = Number.parseInt(nextIndex as any);
         const prev = this.stepperView.getCurrentStep();
-        const next = this.stepperView.getStep(nextIndex)
+        const next = this.stepperView.getStep(nextIndex);
+
+        if (!next) return;
 
         const ok = this.canPerformStepChange(prev, next);
         if (!ok) return;
 
-        this.eventListenters.change.forEach(cb => setTimeout(() => cb(prev, next), 0));
+        this.setState({...this.state, step: next });
 
         return ok;
     }
@@ -116,7 +107,7 @@ export default class Stepper {
      * Custom validator
      */
     private canPerformStepChange(prev: Step, next: Step): boolean {
-        if (this.frozen) {
+        if (this.state.isFrozen) {
             console.warn('[Stepper.js] is frozen');
             return;
         }
@@ -131,6 +122,22 @@ export default class Stepper {
         }
 
         return ok;
+    }
+
+    private getInitialState(): State {
+        // or get from localeStorage if options.cache: true
+        return {
+            isFrozen: false,
+            step: null
+        }
+    }
+
+    private setState(state: State): void {
+        const prevState = this.state;
+
+        this.eventListenters.change.forEach(cb => setTimeout(() => cb(prevState, state), 0));
+
+        this.state = state;
     }
 
     private validateArgs() {

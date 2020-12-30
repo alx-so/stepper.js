@@ -1,10 +1,10 @@
-import { ProgressOptions } from "./ProgressView";
+import { Opts as ProgressOptions } from "./ProgressView";
 import { Step } from "./Stepper";
 
 export interface Options {
     window: Window | null;
     startStep: number;
-    progress?: boolean | ProgressOptions;
+    progress?: ProgressOptions;
     validateStepChange?: (prev: Step, next: Step) => boolean;
 }
 

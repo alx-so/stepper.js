@@ -25,7 +25,7 @@ export default class Stepper {
     }
 
     public getStep(index: number): Step | null {
-        if (!this.isStepValid(index)) return null
+        if (!this.isStepIndexValid(index)) return null
 
         let elem = this.steps[index];
 
@@ -35,11 +35,11 @@ export default class Stepper {
         }
     }
 
-    protected setStep(index: number) {
-        if (!this.isStepValid(index)) return [];
-
-        this.prevStep = this.currentStep;
+    protected setStep(index: number): Step[] {
+        if (!this.isStepIndexValid(index) || !this.isStepInRange(index)) return [];
         
+        this.prevStep = this.currentStep;
+
         this.currentStep = {
             index,
             elem: this.steps[index]
@@ -48,25 +48,29 @@ export default class Stepper {
         return [this.prevStep, this.currentStep];
     }
 
-    private isStepValid(index: number): boolean {
+    private isStepIndexValid(index: number): boolean {
         /**
          * Make sure value is always a number
          */
-        if (typeof index !== 'number' || !Number.isFinite(index)) {
-            console.warn(`[Stepper.js] supplied step value is not a number`);
+        const ok = typeof index === 'number' && Number.isFinite(index);
 
-            return;
+        if (!ok) {
+            console.warn(`[Stepper.js] supplied step value is not a number`);
         }
 
+        return ok;
+    }
+
+    private isStepInRange(index: number): boolean {
         /**
          * Make sure step is in steps range
          */
+        const ok = index >= 0 && index <= this.getStepsCount() - 1;
 
-        const inRange = index >= 0 && index <= this.getStepsCount() - 1;
-        if (!inRange) {
+        if (!ok) {
             console.warn(`[Stepper.js] cannot perform step change to index: ${index}`);
         }
 
-        return inRange; 
+        return ok; 
     }
 }

@@ -1,7 +1,7 @@
 import StepperClassNames from "./StepperClassNames";
 import { tag } from "./utils";
 
-export interface ProgressOptions {
+export interface Opts {
     container?: HTMLElement,
     navEnabled?: boolean
 }
@@ -10,11 +10,11 @@ export default class ProgressView {
     public onClick?: (n: number) => void;
 
     private currentIndex: number;
-    private opts: ProgressOptions;
+    private opts: Opts;
     private container: HTMLElement;
     private progressItems: HTMLElement[];
 
-    constructor(stepsCount: number, opts: boolean | ProgressOptions) {
+    constructor(stepsCount: number, opts: boolean | Opts) {
         this.opts = typeof opts === 'object' ? opts : {};
 
         this.container = this.setupContainer(this.opts.container);
@@ -52,7 +52,7 @@ export default class ProgressView {
         this.currentIndex = index;
     }
 
-    public getOpts(): ProgressOptions {
+    public getOpts(): Opts {
         return this.opts;
     }
 

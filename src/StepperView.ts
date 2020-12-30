@@ -1,52 +1,60 @@
-import ProgressView from "./ProgressView";
+import ProgressView, { Opts as ProgressViewOpts } from "./ProgressView";
 import StepperClassNames from "./StepperClassNames";
-import Stepper, { Step } from "./Stepper";
+import Stepper from "./Stepper";
+
+export interface Opts {
+    index: number,
+    progress: ProgressViewOpts,
+    progressClickHandler?: (n: number) => void
+}
 
 export default class StepperView extends Stepper {
     private container: HTMLElement;
     private progress?: ProgressView;
+    private opts: Opts;
 
-    constructor(container: HTMLElement) {
+    constructor(container: HTMLElement, opts: Opts) {
         super(container.children);
 
         this.container = container;
+        this.opts = opts;
         this.setup(this.getStepsHtml());
+
+        if (opts.progress) this.setupProgress(opts.progress);
+
+        this.setStepActive(opts.index);
     }
 
-    public setStepActive(step: Step): void {
-        if (!step) return;
+    public setStepActive(index: number): void {
+        if (!Number.isFinite(index)) return;
 
-        const { index } = step;
         const [prev, next] = this.setStep(index);
 
         if (prev) prev.elem.classList.remove(StepperClassNames.itemActive);
         if (next) next.elem.classList.add(StepperClassNames.itemActive);
 
-        if (this.progress) {
+        if (this.progress && next) {
             this.progress.setActive(next.index);
         }
-    }
-
-    public setProgress(progress: ProgressView): void {
-        if (this.progress) {
-            console.warn('[Stepper.js] progress already setup!');
-
-            return;
-        }
-
-        this.progress = progress;
-        this.setupProgress(this.progress);
     }
 
     public getProgress(): ProgressView | null {
         return this.progress;
     }
 
-    public setupProgress(progress: ProgressView): void {
-        const opts = progress.getOpts();
+    private setupProgress(opts: ProgressViewOpts): void {
+        const p = new ProgressView(this.getStepsCount(), opts);
+        opts = p.getOpts();
+
         if (typeof opts === 'object') {
-            if (!opts.container) this.container.insertAdjacentElement('beforebegin', progress.getHTML());
+            if (!opts.container) this.container.insertAdjacentElement('beforebegin', p.getHTML());
         }
+
+        if (opts.navEnabled && typeof this.opts.progressClickHandler === 'function') {
+            p.onClick = n => this.opts.progressClickHandler(n);
+        }
+
+        this.progress = p;
     }
     
     private setup(steps: HTMLCollection): void {
