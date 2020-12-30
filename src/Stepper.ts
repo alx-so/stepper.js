@@ -61,6 +61,12 @@ export default class Stepper {
         /**
          * Make sure step is in steps range
          */
-        return index >= 0 && index <= this.getStepsCount() - 1;
+
+        const inRange = index >= 0 && index <= this.getStepsCount() - 1;
+        if (!inRange) {
+            console.warn(`[Stepper.js] cannot perform step change to index: ${index}`);
+        }
+
+        return inRange; 
     }
 }

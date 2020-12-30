@@ -1,12 +1,23 @@
 import StepperClassNames from "./StepperClassNames";
 import { tag } from "./utils";
 
+export interface ProgressOptions {
+    container?: HTMLElement,
+    navEnabled?: boolean
+}
+
 export default class ProgressView {
+    public onClick?: (n: number) => void;
+
+    private currentIndex: number;
+    private opts: ProgressOptions;
     private container: HTMLElement;
     private progressItems: HTMLElement[];
 
-    constructor(stepsCount: number, container?: HTMLElement) {
-        this.container = this.setupContainer(container);
+    constructor(stepsCount: number, opts: boolean | ProgressOptions) {
+        this.opts = typeof opts === 'object' ? opts : {};
+
+        this.container = this.setupContainer(this.opts.container);
         this.progressItems = this.setupItems(stepsCount, this.container);
     }
 
@@ -17,14 +28,14 @@ export default class ProgressView {
     public setActive(index: number): void {
         if (!this.progressItems[index]) return;
 
+        let canSkipLoopAll = (this.currentIndex - 1 === index) || (this.currentIndex + 1 === index);
+
         /**
          * Assume that 'all' prev items is active and dont loop over all items. 
          * Begin from target index.
          */
-        let i = (index <= 0 || !this.isPrevItemActive(index)) ? 0 : index;
-        let cost = 0;
-        while(i <= this.progressItems.length - 1) {
-            cost++;
+        let i = index <= 0 || !canSkipLoopAll && !this.isPrevItemActive(index) ? 0 : index;
+        while (i <= this.progressItems.length - 1) {
             let item = this.progressItems[i];
 
             if (i <= index) item.classList.add('is-active');
@@ -33,12 +44,16 @@ export default class ProgressView {
             /**
              * Assume that 'all' next items is not active so not necessary to loop over them.
              */
-            if (!this.isNextItemActive(i)) break;
+            if (canSkipLoopAll && !this.isNextItemActive(i)) break;
 
             i++;
         }
 
-        console.log(cost);
+        this.currentIndex = index;
+    }
+
+    public getOpts(): ProgressOptions {
+        return this.opts;
     }
 
     private isPrevItemActive(index: number) {
@@ -65,9 +80,16 @@ export default class ProgressView {
         const c: HTMLElement[] = [];
 
         while (c.length !== stepsCount) {
-            var el = tag('div', { attr: { class: StepperClassNames.progressItem } });
+            let el = tag('div', { attr: { class: StepperClassNames.progressItem } });
+            let num = c.length + 1;
 
-            el.textContent = (c.length + 1).toString();
+            el.textContent = num.toString();
+
+            if (this.opts.navEnabled) {
+                el.addEventListener('click', ev => {
+                    if (this.onClick) this.onClick(num - 1);
+                });
+            }
 
             c.push(el);
 

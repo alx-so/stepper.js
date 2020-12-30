@@ -1,11 +1,10 @@
+import { ProgressOptions } from "./ProgressView";
 import { Step } from "./Stepper";
 
 export interface Options {
     window: Window | null;
     startStep: number;
-    progress?: boolean;
-    progressNavEnabled?: boolean;
-    progressContainer?: HTMLElement;
+    progress?: boolean | ProgressOptions;
     validateStepChange?: (prev: Step, next: Step) => boolean;
 }
 

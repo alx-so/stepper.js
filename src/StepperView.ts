@@ -3,11 +3,13 @@ import StepperClassNames from "./StepperClassNames";
 import Stepper, { Step } from "./Stepper";
 
 export default class StepperView extends Stepper {
+    private container: HTMLElement;
     private progress?: ProgressView;
-    
-    constructor(steps: HTMLCollection) {
-        super(steps);
 
+    constructor(container: HTMLElement) {
+        super(container.children);
+
+        this.container = container;
         this.setup(this.getStepsHtml());
     }
 
@@ -25,8 +27,26 @@ export default class StepperView extends Stepper {
         }
     }
 
-    public enableProgress(progress: ProgressView): void {
+    public setProgress(progress: ProgressView): void {
+        if (this.progress) {
+            console.warn('[Stepper.js] progress already setup!');
+
+            return;
+        }
+
         this.progress = progress;
+        this.setupProgress(this.progress);
+    }
+
+    public getProgress(): ProgressView | null {
+        return this.progress;
+    }
+
+    public setupProgress(progress: ProgressView): void {
+        const opts = progress.getOpts();
+        if (typeof opts === 'object') {
+            if (!opts.container) this.container.insertAdjacentElement('beforebegin', progress.getHTML());
+        }
     }
     
     private setup(steps: HTMLCollection): void {
