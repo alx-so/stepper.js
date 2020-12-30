@@ -38,10 +38,6 @@ export default class StepperView extends Stepper {
         }
     }
 
-    public getProgress(): ProgressView | null {
-        return this.progress;
-    }
-
     private setupProgress(opts: ProgressViewOpts): void {
         const p = new ProgressView(this.getStepsCount(), opts);
         opts = p.getOpts();
