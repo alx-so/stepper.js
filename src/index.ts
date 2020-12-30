@@ -52,16 +52,16 @@ export default class Stepper {
         return this.stepperView.getCurrentStep();
     }
 
-    public prev(cb?: (step: Step) => void): void {
-        this.performStepChange(this.stepperView.getCurrentStep().index - 1, cb);
+    public prev(): void {
+        this.performStepChange(this.stepperView.getCurrentStep().index - 1);
     }
 
-    public next(cb?: (step: Step) => void): void {
-        this.performStepChange(this.stepperView.getCurrentStep().index + 1, cb);
+    public next(): void {
+        this.performStepChange(this.stepperView.getCurrentStep().index + 1);
     }
 
-    public stepTo(stepIndex: number, cb?: (step: Step) => void): void {
-        this.performStepChange(stepIndex, cb);
+    public stepTo(stepIndex: number): void {
+        this.performStepChange(stepIndex);
     }
 
     // #endregion
@@ -99,22 +99,21 @@ export default class Stepper {
         this.eventListenters.change.push(cb);
     }
 
-    private performStepChange(nextIndex: number, cb?: (step: Step) => void): boolean {
+    private performStepChange(nextIndex: number): boolean {
         nextIndex = Number.parseInt(nextIndex as any);
         const prev = this.stepperView.getCurrentStep();
         const next = this.stepperView.getStep(nextIndex)
+
         const ok = this.canPerformStepChange(prev, next);
         if (!ok) return;
 
         this.eventListenters.change.forEach(cb => setTimeout(() => cb(prev, next), 0));
 
-        if (cb && typeof cb === 'function') cb(next);
-
         return ok;
     }
 
     /**
-     * Custom validator supplied by user
+     * Custom validator
      */
     private canPerformStepChange(prev: Step, next: Step): boolean {
         if (this.frozen) {
