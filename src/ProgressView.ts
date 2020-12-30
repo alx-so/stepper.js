@@ -22,20 +22,33 @@ export default class ProgressView {
          * Begin from target index.
          */
         let i = (index <= 0 || !this.isPrevItemActive(index)) ? 0 : index;
-
+        let cost = 0;
         while(i <= this.progressItems.length - 1) {
+            cost++;
             let item = this.progressItems[i];
 
             if (i <= index) item.classList.add('is-active');
             if (i > index) item.classList.remove('is-active');
 
+            /**
+             * Assume that 'all' next items is not active so not necessary to loop over them.
+             */
+            if (!this.isNextItemActive(i)) break;
+
             i++;
         }
+
+        console.log(cost);
     }
 
     private isPrevItemActive(index: number) {
         let prev = index - 1;
-        return prev < 0 ? false : this.progressItems[prev].classList.contains('is-active');
+        return prev >= 0 && this.progressItems[prev].classList.contains('is-active');
+    }
+
+    private isNextItemActive(index: number) {
+        let next = index + 1;
+        return next <= this.progressItems.length - 1 && this.progressItems[next].classList.contains('is-active');
     }
 
     private setupContainer(container?: HTMLElement) {
