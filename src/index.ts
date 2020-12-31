@@ -63,7 +63,6 @@ export default class Stepper {
 
     public prev(): void {
         this.performStepChange(this.stepperView.getCurrentStep().index - 1);
-
     }
 
     public next(): void {
