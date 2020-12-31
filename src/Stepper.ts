@@ -24,10 +24,12 @@ export default class Stepper {
         return this.currentStep;
     }
 
-    public getStep(index: number): Step | null {
-        if (!this.isStepIndexValid(index)) return null
+    public getStep(index: number): Step {
+        if (!this.isStepIndexValid(index)) return;
 
         let elem = this.steps[index];
+
+        if (!elem) return;
 
         return {
             index,
@@ -36,7 +38,7 @@ export default class Stepper {
     }
 
     protected setStep(index: number): Step[] {
-        if (!this.isStepIndexValid(index) || !this.isStepInRange(index)) return [];
+        if (!this.isStepIndexValid(index) || !this.isStepInRange(index)) return [this.currentStep, null];
         
         this.prevStep = this.currentStep;
 
