@@ -17,7 +17,7 @@ export default class Stepper {
     constructor(container: HTMLElement, opts: Options) {
         this.options = { ...DefOptions, ...opts };
         this.state = this.getInitialState();
-        this.stepperView = new StepperView(container, 
+        this.stepperView = new StepperView(container,
             this.composeStepperViewOpts(container.children.length, this.options, this.state));
         this.onStateChange(this.handleStateChange.bind(this));
     }
@@ -33,7 +33,7 @@ export default class Stepper {
 
         /** Clean prototype chain */
         let p = Object.getPrototypeOf(this);
-        while(p) {
+        while (p) {
             for (let key in p) {
                 delete p[key];
             }
@@ -44,7 +44,7 @@ export default class Stepper {
 
     public reset(): void {
         const step = this.stepperView.getStep(0);
-        this.setState({...this.state, isFrozen: false, step });
+        this.setState({ ...this.state, isFrozen: false, step });
     }
 
     public isFrozen(): boolean {
@@ -52,7 +52,7 @@ export default class Stepper {
     }
 
     public freeze(isFrozen: boolean): void {
-        this.setState({...this.state, isFrozen });
+        this.setState({ ...this.state, isFrozen });
     }
 
     public getCurrentStep(): Step {
@@ -92,7 +92,7 @@ export default class Stepper {
         const ok = this.canPerformStepChange(prev, next);
         if (!ok) return;
 
-        this.setState({...this.state, step: next });
+        this.setState({ ...this.state, step: next });
 
         return ok;
     }
@@ -103,7 +103,7 @@ export default class Stepper {
             return;
         }
 
-        if (!this.options.validateStepChange || 
+        if (!this.options.validateStepChange ||
             typeof this.options.validateStepChange !== 'function') return true;
 
         const ok = this.options.validateStepChange(prev, next);
