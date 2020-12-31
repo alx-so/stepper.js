@@ -1,11 +1,11 @@
+import { ClassNameOpts } from "./options";
 import ProgressView, { Opts as ProgressViewOpts } from "./ProgressView";
-import StepperClassNames from "./StepperClassNames";
 import Stepper from "./Stepper";
 
 export interface Opts {
-    index: number,
-    progress: ProgressViewOpts,
-    progressClickHandler?: (n: number) => void
+    index: number;
+    className: ClassNameOpts;
+    progress: ProgressViewOpts;
 }
 
 export default class StepperView extends Stepper {
@@ -16,11 +16,11 @@ export default class StepperView extends Stepper {
     constructor(container: HTMLElement, opts: Opts) {
         super(container.children);
 
-        this.container = container;
         this.opts = opts;
+        this.container = container;
         this.setup(this.getStepsHtml());
 
-        if (opts.progress) this.setupProgress(opts.progress);
+        if (opts.progress) this.setupProgress();
 
         this.setStepActive(opts.index);
     }
@@ -30,32 +30,28 @@ export default class StepperView extends Stepper {
 
         const [prev, next] = this.setStep(index);
 
-        if (prev) prev.elem.classList.remove(StepperClassNames.itemActive);
-        if (next) next.elem.classList.add(StepperClassNames.itemActive);
+        if (prev) prev.elem.classList.remove(this.opts.className.stepActive);
+        if (next) next.elem.classList.add(this.opts.className.stepActive);
 
         if (this.progress && next) {
             this.progress.setActive(next.index);
         }
     }
 
-    private setupProgress(opts: ProgressViewOpts): void {
-        const p = new ProgressView(this.getStepsCount(), opts);
-        opts = p.getOpts();
+    private setupProgress(): void {
+        const p = new ProgressView(this.getStepsCount(), this.opts.className, this.opts.progress);
 
-        if (typeof opts === 'object') {
-            if (!opts.container) this.container.insertAdjacentElement('beforebegin', p.getHTML());
-        }
-
-        if (opts.navEnabled && typeof this.opts.progressClickHandler === 'function') {
-            p.onClick = n => this.opts.progressClickHandler(n);
+        if (this.opts.progress && !this.opts.progress.container) {
+            this.container.insertAdjacentElement('beforebegin', p.getHTML());
         }
 
         this.progress = p;
     }
     
     private setup(steps: HTMLCollection): void {
+        this.container.classList.add(this.opts.className.stepsContainer);
         Array.prototype.forEach.call(steps, v => {
-            v.classList.add(StepperClassNames.item);
+            v.classList.add(this.opts.className.stepItem);
         });
     }
 }

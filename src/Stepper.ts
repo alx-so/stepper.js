@@ -38,7 +38,9 @@ export default class Stepper {
     }
 
     protected setStep(index: number): Step[] {
-        if (!this.isStepIndexValid(index) || !this.isStepInRange(index)) return [this.currentStep, null];
+        if (!this.isStepIndexValid(index) || !this.isStepInRange(index)) {
+            return [this.currentStep, null];
+        }
         
         this.prevStep = this.currentStep;
 

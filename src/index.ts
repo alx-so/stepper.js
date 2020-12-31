@@ -134,11 +134,21 @@ export default class Stepper {
 
     private composeStepperViewOpts(stepsCount: number, opts: Options, state: State): StepperViewOpts {
         const index = getInitialIndex();
+        const progress = (() => {
+            if (typeof opts.progress === 'object' && opts.progress.navEnabled) {
+                return {
+                    ...opts.progress,
+                    clickHandler: (n: number) => { this.performStepChange(n) }
+                }
+            }
+
+            return opts.progress;
+        })();
 
         return {
             index,
-            progress: opts.progress,
-            progressClickHandler: (n: number) => { this.performStepChange(n) }
+            className: opts.className,
+            progress
         }
 
         /**
@@ -164,8 +174,9 @@ export default class Stepper {
                     }
                 })();
 
-                const notInRange = (v > stepsCount - 1 || v < 0);
-                if (notInRange) {
+                if (typeof v !== 'number') {
+                    console.warn(`[Stepper.js] supplied urlParam is not valid`);
+                } else if (v > stepsCount - 1 || v < 0) {
                     console.warn(`[Stepper.js] supplied urlParam '${k}=' is not in range.`);
                 } else {
                     index = v;

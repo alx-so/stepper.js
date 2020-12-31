@@ -1,22 +1,24 @@
-import StepperClassNames from "./StepperClassNames";
+import { ClassNameOpts } from "./options";
 import { tag } from "./utils";
 
 export interface Opts {
-    container?: HTMLElement,
-    navEnabled?: boolean
+    clickHandler?: (n: number) => void;
+    container?: HTMLElement;
+    navEnabled?: boolean;
 }
 
 export default class ProgressView {
-    public onClick?: (n: number) => void;
-
     private currentIndex: number;
+    private className: ClassNameOpts;
     private opts: Opts;
     private container: HTMLElement;
     private progressItems: HTMLElement[];
 
-    constructor(stepsCount: number, opts: boolean | Opts) {
-        this.opts = typeof opts === 'object' ? opts : {};
+    constructor(stepsCount: number, className: ClassNameOpts, opts: Opts) {
+        if (typeof opts !== 'object') opts = {};
 
+        this.className = className;
+        this.opts = opts;
         this.container = this.setupContainer(this.opts.container);
         this.progressItems = this.setupItems(stepsCount, this.container);
     }
@@ -38,8 +40,8 @@ export default class ProgressView {
         while (i <= this.progressItems.length - 1) {
             let item = this.progressItems[i];
 
-            if (i <= index) item.classList.add('is-active');
-            if (i > index) item.classList.remove('is-active');
+            if (i <= index) item.classList.add(this.className.progressActive);
+            if (i > index) item.classList.remove(this.className.progressActive);
 
             /**
              * Assume that 'all' next items is not active so not necessary to loop over them.
@@ -58,36 +60,38 @@ export default class ProgressView {
 
     private isPrevItemActive(index: number) {
         let prev = index - 1;
-        return prev >= 0 && this.progressItems[prev].classList.contains('is-active');
+        return prev >= 0 && 
+            this.progressItems[prev].classList.contains(this.className.progressActive);
     }
 
     private isNextItemActive(index: number) {
         let next = index + 1;
-        return next <= this.progressItems.length - 1 && this.progressItems[next].classList.contains('is-active');
+        return next <= this.progressItems.length - 1 && 
+            this.progressItems[next].classList.contains(this.className.progressActive);
     }
 
     private setupContainer(container?: HTMLElement) {
         if (container) {
-            container.classList.add(StepperClassNames.progress);
+            container.classList.add(this.className.progressContainer);
 
             return container;
         }
 
-        return tag('div', { attr: { class: StepperClassNames.progress } });
+        return tag('div', { attr: { class: this.className.progressContainer } });
     }
 
     private setupItems(stepsCount: number, container: HTMLElement): HTMLElement[] {
         const c: HTMLElement[] = [];
 
         while (c.length !== stepsCount) {
-            let el = tag('div', { attr: { class: StepperClassNames.progressItem } });
+            let el = tag('div', { attr: { class: this.className.progressItem } });
             let num = c.length + 1;
 
             el.textContent = num.toString();
 
             if (this.opts.navEnabled) {
                 el.addEventListener('click', ev => {
-                    if (this.onClick) this.onClick(num - 1);
+                    if (this.opts.clickHandler) this.opts.clickHandler(num - 1);
                 });
             }
 
