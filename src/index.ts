@@ -164,7 +164,7 @@ export default class Stepper {
                     }
                 })();
 
-                const notInRange = (v < stepsCount || v > stepsCount);
+                const notInRange = (v > stepsCount - 1 || v < 0);
                 if (notInRange) {
                     console.warn(`[Stepper.js] supplied urlParam '${k}=' is not in range.`);
                 } else {
