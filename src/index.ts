@@ -8,6 +8,7 @@ interface State {
 }
 
 export default class Stepper {
+    private cacheId: string = 'stepper_data';
     private eventListenters = { 'change': [] };
     private stepperView: StepperView;
     private options: Options;
@@ -16,8 +17,8 @@ export default class Stepper {
     constructor(container: HTMLElement, opts: Options) {
         this.options = { ...DefOptions, ...opts };
         this.state = this.getInitialState();
-        this.stepperView = new StepperView(container, this.composeStepperViewOpts(this.options));
-
+        this.stepperView = new StepperView(container, 
+            this.composeStepperViewOpts(this.options, this.state));
         this.onStateChange(this.handleStateChange.bind(this));
     }
 
@@ -25,11 +26,12 @@ export default class Stepper {
 
     public destroy(): void {
         for (let key in this) {
-            // if (key === 'options') continue;
+            /** Don't delete external opts object */
+            if (key === 'options') continue;
             delete this[key];
         }
 
-        // cleanup prototype chain
+        /** Clean prototype chain */
         let p = Object.getPrototypeOf(this);
         while(p) {
             for (let key in p) {
@@ -72,14 +74,6 @@ export default class Stepper {
 
     // #endregion
 
-    private composeStepperViewOpts(opts: Options): StepperViewOpts {
-        return {
-            index: opts.startStep,
-            progress: opts.progress,
-            progressClickHandler: (n: number) => { this.performStepChange(n) }
-        }
-    }
-
     private handleStateChange(prev: State, next: State): void {
         this.stepperView.setStepActive(next.step.index);
     }
@@ -103,9 +97,6 @@ export default class Stepper {
         return ok;
     }
 
-    /**
-     * Custom validator
-     */
     private canPerformStepChange(prev: Step, next: Step): boolean {
         if (this.state.isFrozen) {
             console.warn('[Stepper.js] is frozen');
@@ -125,10 +116,29 @@ export default class Stepper {
     }
 
     private getInitialState(): State {
-        // or get from localeStorage if options.cache: true
+        if (this.options.cache) {
+            try {
+                const state = JSON.parse(localStorage.getItem(this.cacheId)) as State;
+
+                if (state && this.isStateValid(state)) return state;
+            } catch (e) {
+                console.warn('[Stepper.js] failed to parse cached state. Using default');
+            }
+        }
+
         return {
             isFrozen: false,
             step: null
+        }
+    }
+
+    private composeStepperViewOpts(opts: Options, state: State): StepperViewOpts {
+        const index = state.step ? state.step.index : opts.startStep;
+
+        return {
+            index,
+            progress: opts.progress,
+            progressClickHandler: (n: number) => { this.performStepChange(n) }
         }
     }
 
@@ -138,6 +148,29 @@ export default class Stepper {
         this.eventListenters.change.forEach(cb => setTimeout(() => cb(prevState, state), 0));
 
         this.state = state;
+
+        if (this.options.cache) {
+            this.saveState(this.state);
+        }
+    }
+
+    private saveState(s: State): void {
+        /** Dont save html elem */
+        const replacer = (k, v) => {
+            if (k === 'elem') {
+                return;
+            }
+
+            return v;
+        };
+
+        setTimeout(() => localStorage.setItem(this.cacheId, JSON.stringify(s, replacer)), 0);
+    }
+
+    private isStateValid(s: State): boolean {
+        if (typeof s.step === 'object') {
+            return Number.isFinite(s.step.index);
+        }
     }
 
     private validateArgs() {

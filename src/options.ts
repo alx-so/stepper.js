@@ -5,6 +5,7 @@ export interface Options {
     window: Window | null;
     startStep: number;
     progress?: ProgressOptions;
+    cache?: boolean;
     validateStepChange?: (prev: Step, next: Step) => boolean;
 }
 
