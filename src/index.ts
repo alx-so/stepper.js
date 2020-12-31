@@ -18,7 +18,7 @@ export default class Stepper {
         this.options = { ...DefOptions, ...opts };
         this.state = this.getInitialState();
         this.stepperView = new StepperView(container, 
-            this.composeStepperViewOpts(this.options, this.state));
+            this.composeStepperViewOpts(container.children.length, this.options, this.state));
         this.onStateChange(this.handleStateChange.bind(this));
     }
 
@@ -132,13 +132,47 @@ export default class Stepper {
         }
     }
 
-    private composeStepperViewOpts(opts: Options, state: State): StepperViewOpts {
-        const index = state.step ? state.step.index : opts.startStep;
+    private composeStepperViewOpts(stepsCount: number, opts: Options, state: State): StepperViewOpts {
+        const index = getInitialIndex();
 
         return {
             index,
             progress: opts.progress,
             progressClickHandler: (n: number) => { this.performStepChange(n) }
+        }
+
+        /**
+         * Get index by priority: 1 is highest
+         * 
+         * 1. UrlParam
+         * 2. Cache
+         * 3. opts
+         */
+        function getInitialIndex(): number {
+            let index = state.step ? state.step.index : opts.startStep;
+
+            if (opts.urlParam) {
+                const k = typeof opts.urlParam === 'string' ? opts.urlParam : 'step';
+                const v = (() => {
+                    let pList = window.location.search.split('&');
+                    let sParam = pList.filter(v => v.indexOf(`${k}=`) !== -1);
+
+                    if (sParam.length === 1) {
+                        let sVal = parseInt(sParam[0].split('=')[1]);
+
+                        if (typeof sVal === 'number' && sVal >= 0) return sVal;
+                    }
+                })();
+
+                const notInRange = (v < stepsCount || v > stepsCount);
+                if (notInRange) {
+                    console.warn(`[Stepper.js] supplied urlParam '${k}=' is not in range.`);
+                } else {
+                    index = v;
+                }
+            }
+
+            return index;
         }
     }
 

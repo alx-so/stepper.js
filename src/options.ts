@@ -6,6 +6,7 @@ export interface Options {
     startStep: number;
     progress?: ProgressOptions;
     cache?: boolean;
+    urlParam?: string,
     validateStepChange?: (prev: Step, next: Step) => boolean;
 }
 
