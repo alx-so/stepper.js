@@ -15,7 +15,9 @@ export default class Stepper {
     private state: State;
 
     constructor(container: HTMLElement, opts: Options) {
-        this.options = { ...DefOptions, ...opts };
+        this.options = { ...DefOptions, ...opts, 
+            className: { ...DefOptions.className, ...opts.className }
+        };
         this.state = this.getInitialState();
         this.stepperView = new StepperView(container,
             this.composeStepperViewOpts(container.children.length, this.options, this.state));
