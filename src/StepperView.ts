@@ -26,7 +26,7 @@ export default class StepperView extends Stepper {
     }
 
     public setStepActive(index: number): void {
-        if (!Number.isFinite(index)) return;
+        if (!isFinite(index)) return;
 
         const [prev, next] = this.setStep(index);
 

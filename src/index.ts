@@ -83,7 +83,7 @@ export default class Stepper {
     }
 
     private performStepChange(nextIndex: number): boolean {
-        nextIndex = Number.parseInt(nextIndex as any);
+        nextIndex = parseInt(nextIndex as any);
         const prev = this.stepperView.getCurrentStep();
         const next = this.stepperView.getStep(nextIndex);
 
@@ -109,14 +109,14 @@ export default class Stepper {
         const ok = this.options.validateStepChange(prev, next);
 
         if (!ok) {
-            console.warn('[Stepper.js]: step change did not pass validation. Check your validateStepChange()');
+            console.warn('[Stepper.js]: step change did not pass validateStepChange()');
         }
 
         return ok;
     }
 
     private getInitialState(): State {
-        if (this.options.cache) {
+        if (this.options.cache && localStorage) {
             try {
                 const state = JSON.parse(localStorage.getItem(this.cacheId)) as State;
 
@@ -155,6 +155,8 @@ export default class Stepper {
     }
 
     private saveState(s: State): void {
+        if (!localStorage) return;
+
         /** Dont save html elem */
         const replacer = (k, v) => {
             if (k === 'elem') {
@@ -169,7 +171,7 @@ export default class Stepper {
 
     private isStateValid(s: State): boolean {
         if (typeof s.step === 'object') {
-            return Number.isFinite(s.step.index);
+            return isFinite(s.step.index);
         }
     }
 

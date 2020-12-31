@@ -54,7 +54,7 @@ export default class Stepper {
         /**
          * Make sure value is always a number
          */
-        const ok = typeof index === 'number' && Number.isFinite(index);
+        const ok = typeof index === 'number' && isFinite(index);
 
         if (!ok) {
             console.warn(`[Stepper.js] supplied step value is not a number`);
