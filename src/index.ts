@@ -149,7 +149,7 @@ export default class Stepper {
          * 3. opts
          */
         function getInitialIndex(): number {
-            let index = state.step ? state.step.index : opts.startStep;
+            let index = state.step ? state.step.index : opts.startIndex;
 
             if (opts.urlParam) {
                 const k = typeof opts.urlParam === 'string' ? opts.urlParam : 'step';

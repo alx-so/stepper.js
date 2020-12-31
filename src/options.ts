@@ -3,7 +3,7 @@ import { Step } from "./Stepper";
 
 export interface Options {
     window: Window | null;
-    startStep: number;
+    startIndex: number;
     progress?: ProgressOptions;
     cache?: boolean;
     urlParam?: string,
@@ -12,5 +12,5 @@ export interface Options {
 
 export const DefOptions: Options = {
     window: typeof window !== 'undefined' ? window : null,
-    startStep: 0
+    startIndex: 0
 }
