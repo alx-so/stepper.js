@@ -38,6 +38,14 @@ export default class StepperView extends Stepper {
         }
     }
 
+    public getHTML(): HTMLElement {
+        return this.container;
+    }
+
+    public getProgress(): ProgressView {
+        return this.progress;
+    }
+
     private setupProgress(): void {
         const p = new ProgressView(this.getStepsCount(), this.opts.className, this.opts.progress);
 
