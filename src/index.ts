@@ -1,6 +1,9 @@
 import { Options, DefOptions } from './options';
+import EventName from './events';
+
 import { Step } from './Stepper';
 import StepperView, { Opts as StepperViewOpts } from './StepperView';
+import dispatchEvent from './utils/dispatch-event';
 
 interface State {
     isFrozen: boolean,
@@ -15,6 +18,14 @@ export default class Stepper {
     private state: State;
 
     constructor(container: HTMLElement, opts: Options) {
+        this.setup(container, opts);
+    }
+
+    // #region Public API
+
+    public setup(container: HTMLElement, opts: Options): void {
+        dispatchEvent(container, EventName.beforeSetup);
+
         this.options = { ...DefOptions, ...opts, 
             className: { ...DefOptions.className, ...opts.className }
         };
@@ -22,11 +33,13 @@ export default class Stepper {
         this.stepperView = new StepperView(container,
             this.composeStepperViewOpts(container.children.length, this.options, this.state));
         this.onStateChange(this.handleStateChange.bind(this));
+
+        this.dispatchStepperEvent(EventName.afterSetup);
     }
 
-    // #region Public API
-
     public destroy(): void {
+        this.dispatchStepperEvent(EventName.beforeDestroy);
+
         for (let key in this) {
             /** Don't delete external opts object */
             if (key === 'options') continue;
@@ -42,11 +55,14 @@ export default class Stepper {
 
             p = Object.getPrototypeOf(p);
         }
+
+        this.dispatchStepperEvent(EventName.afterDestroy);
     }
 
     public reset(): void {
-        const step = this.stepperView.getStep(0);
-        this.setState({ ...this.state, isFrozen: false, step });
+        this.dispatchStepperEvent(EventName.beforeReset);
+        this.performStepChange(0);
+        this.dispatchStepperEvent(EventName.afterReset);
     }
 
     public isFrozen(): boolean {
@@ -77,6 +93,10 @@ export default class Stepper {
 
     private handleStateChange(prev: State, next: State): void {
         this.stepperView.setStepActive(next.step.index);
+
+        this.dispatchStepperEvent(EventName.afterChange, {
+            currentStep: next.step
+        });
     }
 
     private onStateChange(cb: () => any): void {
@@ -89,6 +109,11 @@ export default class Stepper {
         const next = this.stepperView.getStep(nextIndex);
 
         if (!next) return;
+
+        this.dispatchStepperEvent(EventName.beforeChange, {
+            currentStep: prev,
+            nextStep: next
+        });
 
         const ok = this.canPerformStepChange(prev, next);
         if (!ok) return;
@@ -219,6 +244,10 @@ export default class Stepper {
         if (typeof s.step === 'object') {
             return isFinite(s.step.index);
         }
+    }
+
+    private dispatchStepperEvent(event: EventName, detail?: any): void {
+        dispatchEvent(this.stepperView.getHTML(), event, detail);
     }
 
     private validateArgs() {
