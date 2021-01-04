@@ -23,6 +23,30 @@ export default class Stepper {
 
     // #region Public API
 
+    public prev(): void {
+        this.performStepChange(this.stepperView.getCurrentStep().index - 1);
+    }
+
+    public next(): void {
+        this.performStepChange(this.stepperView.getCurrentStep().index + 1);
+    }
+
+    public stepTo(index: number): void {
+        this.performStepChange(index);
+    }
+
+    public getCurrentStep(): Step {
+        return this.state.step;
+    }
+
+    public freeze(isFrozen: boolean): void {
+        this.setState({ ...this.state, isFrozen });
+    }
+
+    public isFrozen(): boolean {
+        return this.state.isFrozen;
+    }
+
     public setup(container: HTMLElement, opts: Options): void {
         dispatchEvent(container, EventName.beforeSetup);
 
@@ -63,30 +87,6 @@ export default class Stepper {
         this.dispatchStepperEvent(EventName.beforeReset);
         this.performStepChange(0);
         this.dispatchStepperEvent(EventName.afterReset);
-    }
-
-    public isFrozen(): boolean {
-        return this.state.isFrozen;
-    }
-
-    public freeze(isFrozen: boolean): void {
-        this.setState({ ...this.state, isFrozen });
-    }
-
-    public getCurrentStep(): Step {
-        return this.state.step;
-    }
-
-    public prev(): void {
-        this.performStepChange(this.stepperView.getCurrentStep().index - 1);
-    }
-
-    public next(): void {
-        this.performStepChange(this.stepperView.getCurrentStep().index + 1);
-    }
-
-    public stepTo(index: number): void {
-        this.performStepChange(index);
     }
 
     // #endregion
