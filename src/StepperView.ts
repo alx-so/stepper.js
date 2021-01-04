@@ -1,6 +1,6 @@
 import { ClassNameOpts } from "./options";
 import ProgressView, { Opts as ProgressViewOpts } from "./ProgressView";
-import Stepper from "./Stepper";
+import StepperBase from "./StepperBase";
 
 export interface Opts {
     index: number;
@@ -8,7 +8,7 @@ export interface Opts {
     progress: ProgressViewOpts;
 }
 
-export default class StepperView extends Stepper {
+export default class StepperView extends StepperBase {
     private container: HTMLElement;
     private progress?: ProgressView;
     private opts: Opts;
