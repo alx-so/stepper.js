@@ -1,6 +1,6 @@
 🌌 Universal multi step JavaScript plugin for any purpose.
 
-[![license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://raw.githubusercontent.com/loryjs/lory/master/LICENSE)
+[![license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/alx-so/stepper.js/blob/master/LICENSE)
 
 ## Download
 
