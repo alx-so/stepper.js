@@ -82,7 +82,10 @@ stepTo(index: number)
 <td>
 
 ```ts
-getCurrentStep(): { index: number, elem: Element }
+getCurrentStep(): { 
+    index: number, 
+    elem: Element 
+}
 ```
 
 </td>
@@ -206,7 +209,10 @@ className: {
 <td>
 
 ```ts
-progress: boolean | { container?: Element, navEnabled?: boolean }
+progress: boolean | { 
+    container?: Element, 
+    navEnabled?: boolean 
+}
 ```
 
 </td>
