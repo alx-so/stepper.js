@@ -1,5 +1,5 @@
 import { Opts as ProgressOptions } from "./ProgressView";
-import { Step } from "./Stepper";
+import { Step } from "./StepperBase";
 
 export interface ClassNameOpts {
     progressContainer: string;

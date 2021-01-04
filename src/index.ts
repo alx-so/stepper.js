@@ -1,7 +1,7 @@
 import { Options, DefOptions } from './options';
 import EventName from './events';
 
-import { Step } from './Stepper';
+import { Step } from './StepperBase';
 import StepperView, { Opts as StepperViewOpts } from './StepperView';
 import dispatchEvent from './utils/dispatch-event';
 
