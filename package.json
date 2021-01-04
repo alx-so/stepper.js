@@ -7,7 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "dev": "./node_modules/.bin/rollup.cmd -c builder/rollup.config.js -w"
+    "dev": "./node_modules/.bin/rollup.cmd -c builder/rollup.config.js -w --dev",
+    "dist": "./node_modules/.bin/rollup.cmd -c builder/rollup.config.js -w --dist"
   },
   "repository": {
     "type": "git",
@@ -21,9 +22,11 @@
   "homepage": "https://github.com/alx-so/stepper.js#readme",
   "devDependencies": {
     "@rollup/plugin-typescript": "^8.1.0",
+    "@types/yargs": "^15.0.12",
     "rollup": "^2.35.1",
     "rollup-plugin-terser": "^7.0.2",
     "tslib": "^2.0.3",
-    "typescript": "^4.1.3"
+    "typescript": "^4.1.3",
+    "yargs": "^16.2.0"
   }
 }

@@ -1,5 +1,11 @@
 import typescript from '@rollup/plugin-typescript';
 import { terser } from "rollup-plugin-terser";
+import yargs from 'yargs/yargs';
+import { hideBin } from 'yargs/helpers';
+
+const argv = yargs(hideBin(process.argv)).argv;
+const isDist = argv['dist'];
+const plugins = composePlugins(isDist);
 
 export default {
     input: 'src/index.ts',
@@ -8,8 +14,14 @@ export default {
         format: 'umd',
         name: 'Stepper'
     },
-    plugins: [
-        typescript(),
-        // terser({ output: { comments: false } })
-    ]
+    plugins
 };
+
+function composePlugins(isDist) {
+    const def = [typescript()];
+    let plugins = [...def];
+
+    if (isDist) plugins = [...plugins, terser({ output: { comments: false } })];
+
+    return plugins;
+}
