@@ -1,5 +1,5 @@
-🌌 Universal multi step JavaScript plugin for any purpose.
-
+🌌 Universal and lightweight multi step JavaScript plugin with no dependencies.
+ 
 [![license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/alx-so/stepper.js/blob/master/LICENSE)
 
 ## Download
