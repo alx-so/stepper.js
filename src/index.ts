@@ -85,7 +85,7 @@ export default class Stepper {
 
     public reset(): void {
         this.dispatchStepperEvent(EventName.beforeReset);
-        this.performStepChange(0);
+        this.performStepChange(0, false);
         this.dispatchStepperEvent(EventName.afterReset);
     }
 
@@ -103,7 +103,7 @@ export default class Stepper {
         this.eventListenters.change.push(cb);
     }
 
-    private performStepChange(nextIndex: number): boolean {
+    private performStepChange(nextIndex: number, shouldValidate: boolean = true): boolean {
         nextIndex = parseInt(nextIndex as any);
         const prev = this.stepperView.getCurrentStep();
         const next = this.stepperView.getStep(nextIndex);
@@ -115,7 +115,11 @@ export default class Stepper {
             nextStep: next
         });
 
-        const ok = this.canPerformStepChange(prev, next);
+        let ok = true;
+        if (shouldValidate) {
+            ok = this.canPerformStepChange(prev, next);
+        }
+
         if (!ok) return;
 
         this.setState({ ...this.state, step: next });
