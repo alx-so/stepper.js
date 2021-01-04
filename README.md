@@ -6,13 +6,26 @@
 
 Stepper.js is released under the MIT license & supports modern environments.
 
-## Use it simply in your browser:
+## Basic usage
+
+```html
+<div class="container">
+    <div>a</div>
+    <div>b</div>
+    <div>c</div>
+    <div>d</div>
+</div>
+
+<button class="prev">prev</button>
+<button class="next">next</button>
+
+<script src="dist/stepper.min.js"></script>
+```
 
 ```js
 var stepper = new Stepper(document.querySelector('.container'), {
     cache: true,
-    urlParam: false,
-    progress: true
+    progress: { navEnabled: true }
 });
 
 document.querySelector('.prev').addEventListener('click', function() {
