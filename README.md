@@ -153,3 +153,74 @@ let opts = {
 
 new Stepper(document.querySelector('.container'), opts);
 ```
+
+## Events
+
+<table>
+    <tr>
+        <td>
+            stepper.before.setup
+        </td>
+        <td>
+            fires just before the setup is started - on instance creation or calling setup() method
+        </td>
+    </tr>
+    <tr>
+        <td>
+            stepper.after.setup
+        </td>
+        <td>
+            fires right after setup is done - on instance creation or calling setup() method
+        </td>
+    </tr>
+    <tr>
+        <td>
+            stepper.before.destroy
+        </td>
+        <td>
+            fires right before destroy() began
+        </td>
+    </tr>
+    <tr>
+        <td>
+            stepper.after.destroy
+        </td>
+        <td>
+            fires right after destroy() done
+        </td>
+    </tr>
+    <tr>
+        <td>
+            stepper.before.reset
+        </td>
+        <td>
+            fires right before reset() began
+        </td>
+    </tr>
+    <tr>
+        <td>
+            stepper.after.reset
+        </td>
+        <td>
+            fires right after reset() done
+        </td>
+    </tr>
+    <tr>
+        <td>
+            stepper.before.change
+        </td>
+        <td>
+            fires before any step change performed and optional validateStepChange() called.<br>
+            Detail args: prevStep, nextStep
+        </td>
+    </tr>
+    <tr>
+        <td>
+            stepper.after.change
+        </td>
+        <td>
+            fires after step change performed successfully.<br>
+            Detail args: prevStep, nextStep
+        </td>
+    </tr>
+</table>
