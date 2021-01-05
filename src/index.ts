@@ -7,15 +7,25 @@ import dispatchEvent from './utils/dispatch-event';
 
 interface State {
     isFrozen: boolean,
-    step: Step
+    step?: Step
+}
+
+interface StepChangeCallback {
+    (prev: State, next: State): void
+}
+
+interface EventListeners {
+    change: StepChangeCallback[]
 }
 
 export default class Stepper {
     private cacheId: string = 'stepper_data';
-    private eventListenters = { 'change': [] };
-    private stepperView: StepperView;
-    private options: Options;
-    private state: State;
+    private eventListenters: EventListeners  = { 'change': [] };
+
+    // assigned in setup()
+    private stepperView!: StepperView;
+    private options!: Options;
+    private state!: State;
 
     constructor(container: HTMLElement, opts: Options) {
         this.setup(container, opts);
@@ -35,7 +45,7 @@ export default class Stepper {
         this.performStepChange(index);
     }
 
-    public getCurrentStep(): Step {
+    public getCurrentStep(): Step | undefined {
         return this.state.step;
     }
 
@@ -92,14 +102,14 @@ export default class Stepper {
     // #endregion
 
     private handleStateChange(prev: State, next: State): void {
-        this.stepperView.setStepActive(next.step.index);
+        if (next.step) this.stepperView.setStepActive(next.step.index);
 
         this.dispatchStepperEvent(EventName.afterChange, {
             currentStep: next.step
         });
     }
 
-    private onStateChange(cb: () => any): void {
+    private onStateChange(cb: (prev: State, next: State) => any): void {
         this.eventListenters.change.push(cb);
     }
 
@@ -108,7 +118,7 @@ export default class Stepper {
         const prev = this.stepperView.getCurrentStep();
         const next = this.stepperView.getStep(nextIndex);
 
-        if (!next) return;
+        if (!next) return false;
 
         this.dispatchStepperEvent(EventName.beforeChange, {
             currentStep: prev,
@@ -120,7 +130,7 @@ export default class Stepper {
             ok = this.canPerformStepChange(prev, next);
         }
 
-        if (!ok) return;
+        if (!ok) return false;
 
         this.setState({ ...this.state, step: next });
 
@@ -130,7 +140,8 @@ export default class Stepper {
     private canPerformStepChange(prev: Step, next: Step): boolean {
         if (this.state.isFrozen) {
             console.warn('[Stepper.js] is frozen');
-            return;
+
+            return false;
         }
 
         if (!this.options.validateStepChange ||
@@ -148,17 +159,19 @@ export default class Stepper {
     private getInitialState(): State {
         if (this.options.cache && localStorage) {
             try {
-                const state = JSON.parse(localStorage.getItem(this.cacheId)) as State;
+                const s = localStorage.getItem(this.cacheId);
 
-                if (state && this.isStateValid(state)) return state;
+                if (s) {
+                    const state = JSON.parse(s) as State;
+                    if (state && this.isStateValid(state)) return state;
+                }
             } catch (e) {
                 console.warn('[Stepper.js] failed to parse cached state. Using default');
             }
         }
 
         return {
-            isFrozen: false,
-            step: null
+            isFrozen: false
         }
     }
 
@@ -233,7 +246,7 @@ export default class Stepper {
         if (!localStorage) return;
 
         /** Dont save html elem */
-        const replacer = (k, v) => {
+        const replacer = (k: string, v: any) => {
             if (k === 'elem') {
                 return;
             }
@@ -245,9 +258,7 @@ export default class Stepper {
     }
 
     private isStateValid(s: State): boolean {
-        if (typeof s.step === 'object') {
-            return isFinite(s.step.index);
-        }
+        return typeof s.step === 'object' && isFinite(s.step.index);
     }
 
     private dispatchStepperEvent(event: EventName, detail?: any): void {
