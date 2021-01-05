@@ -1,4 +1,3 @@
-import { Opts as ProgressOptions } from "./ProgressView";
 import { Step } from "./StepperBase";
 
 export interface ClassNameOpts {
@@ -13,7 +12,10 @@ export interface ClassNameOpts {
 export interface Options {
     startIndex: number;
     className: ClassNameOpts
-    progress?: ProgressOptions;
+    progress?: {
+        container?: HTMLElement,
+        navEnabled?: boolean
+    };
     cache?: boolean;
     urlParam?: string,
     validateStepChange?: (prev: Step, next: Step) => boolean;
