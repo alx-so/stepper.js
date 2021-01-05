@@ -4,17 +4,16 @@ import { tag } from "./utils";
 export interface Opts {
     clickHandler?: (n: number) => void;
     container?: HTMLElement;
-    navEnabled?: boolean;
 }
 
 export default class ProgressView {
-    private currentIndex: number;
+    private currentIndex: number = 0;
     private className: ClassNameOpts;
     private opts: Opts;
     private container: HTMLElement;
     private progressItems: HTMLElement[];
 
-    constructor(stepsCount: number, className: ClassNameOpts, opts: Opts) {
+    constructor(stepsCount: number, className: ClassNameOpts, opts?: Opts) {
         if (typeof opts !== 'object') opts = {};
 
         this.className = className;
@@ -89,7 +88,7 @@ export default class ProgressView {
 
             el.textContent = num.toString();
 
-            if (this.opts.navEnabled) {
+            if (this.opts.clickHandler) {
                 el.addEventListener('click', ev => {
                     if (this.opts.clickHandler) this.opts.clickHandler(num - 1);
                 });
