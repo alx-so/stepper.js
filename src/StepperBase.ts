@@ -5,11 +5,16 @@ export interface Step {
 
 export default class StepperBase {
     private steps: HTMLCollection;
-    private prevStep: Step;
+    private prevStep?: Step;
     private currentStep: Step;
 
-    constructor(steps: HTMLCollection) {
+    constructor(steps: HTMLCollection, initialStepIndex: number = 0) {
         this.steps = steps;
+
+        this.currentStep = {
+            index: initialStepIndex,
+            elem: this.steps[initialStepIndex]
+        };
     }
 
     public getStepsCount(): number {
@@ -24,7 +29,7 @@ export default class StepperBase {
         return this.currentStep;
     }
 
-    public getStep(index: number): Step {
+    public getStep(index: number): Step | undefined {
         if (!this.isStepIndexValid(index)) return;
 
         let elem = this.steps[index];
@@ -39,11 +44,10 @@ export default class StepperBase {
 
     protected setStep(index: number): Step[] {
         if (!this.isStepIndexValid(index) || !this.isStepInRange(index)) {
-            return [this.currentStep, null];
+            return [this.currentStep];
         }
         
         this.prevStep = this.currentStep;
-
         this.currentStep = {
             index,
             elem: this.steps[index]
