@@ -7,7 +7,7 @@ export interface Opts {
 }
 
 export default class ProgressView {
-    private currentIndex: number = 0;
+    private currentIndex?: number;
     private className: ClassNameOpts;
     private opts: Opts;
     private container: HTMLElement;
@@ -29,7 +29,8 @@ export default class ProgressView {
     public setActive(index: number): void {
         if (!this.progressItems[index]) return;
 
-        let canSkipLoopAll = (this.currentIndex - 1 === index) || (this.currentIndex + 1 === index);
+        let canSkipLoopAll = this.currentIndex !== undefined && 
+            (this.currentIndex - 1 === index || this.currentIndex + 1 === index);
 
         /**
          * Assume that 'all' prev items is active and dont loop over all items. 
