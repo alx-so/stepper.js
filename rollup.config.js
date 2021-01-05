@@ -8,9 +8,9 @@ const isDist = argv['dist'];
 const plugins = composePlugins(isDist);
 
 export default {
-    input: 'src/index.ts',
+    input: 'dist/test.ts',
     output: {
-        file: 'dist/stepper.min.js',
+        file: 'dist/stepper2.min.js',
         format: 'umd',
         name: 'Stepper'
     },
