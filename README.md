@@ -1,4 +1,4 @@
-🌌 Universal and lightweight multi step JavaScript plugin with no dependencies.
+🌌 Universal and lightweight JavaScript plugin for creating multi step UI with no dependencies.
  
 [![license](http://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/alx-so/stepper.js/blob/master/LICENSE)
 
