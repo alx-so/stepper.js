@@ -138,7 +138,8 @@ let opts = {
     // Whether to save intermediate state
     cache: true,
 
-    // String | boolean - whether step can be opened by url param. string value is the name of url param &name=.
+    // String | boolean - whether step can be opened by url param. 
+    // string value is the name of url param &name=.
     // Param value &name=0 is index of step.
     // !!! Important: param value has higher priority then cache.
     urlParam: true,
