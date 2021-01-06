@@ -125,8 +125,10 @@ let opts = {
 
     // Boolean | Object - indicating that progress is enabled.
     progress: {
-        // target element into which progress html will be inserted (note: any child elements will be replaced).
-        // If not supplied, element will be created and inserted before steps container
+        // target element for progress to use.
+        // 1. If not supplied => element will be created and inserted before steps container
+        // 2. If supplied => it will create and insert simple 1,2,3...
+        // 3. If supplied and has children => will use your custom elements
         container: document.querySelector('.progress'),
         
         // is step change enabled by clicking on progress item
