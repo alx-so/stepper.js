@@ -103,7 +103,7 @@ export default class ProgressView {
 
         function tryUseExistingElems(): Element[] {
             if (containerChildCount !== stepsCount) {
-                throw new Error('Progress container children count must be same as steps count or 0!!');
+                throw new Error('Progress container children count must be same as steps or 0!');
             }
 
             return Array.prototype.map.call(container.children, addItemInfo) as Element[];
