@@ -3,7 +3,7 @@ export interface TagOptions {
     attr?: { [key: string]: any };
 }
 
-export default function tag(tagName: string | HTMLElement, options: TagOptions = {}): HTMLElement {
+export default function tag(tagName: string | HTMLElement, options: TagOptions = {}): Element {
     const isElement: boolean = tagName instanceof Element;
 
     if (!isElement && typeof tagName !== 'string')
@@ -11,7 +11,7 @@ export default function tag(tagName: string | HTMLElement, options: TagOptions =
 
     const el = (
         isElement ? tagName : document.createElement(tagName as string)
-    ) as HTMLElement;
+    ) as Element;
 
     if (options['children'] && Array.isArray(options['children'])) {
         const l = options.children.reverse();
