@@ -14,10 +14,8 @@ export default class ProgressView {
     private progressItems: HTMLElement[];
 
     constructor(stepsCount: number, className: ClassNameOpts, opts?: Opts) {
-        if (typeof opts !== 'object') opts = {};
-
         this.className = className;
-        this.opts = opts;
+        this.opts = opts ?? {};
         this.container = this.setupContainer(this.opts.container);
         this.progressItems = this.setupItems(stepsCount, this.container);
     }
