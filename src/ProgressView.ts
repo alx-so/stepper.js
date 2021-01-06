@@ -3,15 +3,15 @@ import { tag } from "./utils";
 
 export interface Opts {
     clickHandler?: (n: number) => void;
-    container?: HTMLElement;
+    container?: Element;
 }
 
 export default class ProgressView {
     private currentIndex?: number;
     private className: ClassNameOpts;
     private opts: Opts;
-    private container: HTMLElement;
-    private progressItems: HTMLElement[];
+    private container: Element;
+    private progressItems: Element[];
 
     constructor(stepsCount: number, className: ClassNameOpts, opts?: Opts) {
         this.className = className;
@@ -20,7 +20,7 @@ export default class ProgressView {
         this.progressItems = this.setupItems(stepsCount, this.container);
     }
 
-    public getHTML(): HTMLElement {
+    public getHTML(): Element {
         return this.container;
     }
 
@@ -68,7 +68,7 @@ export default class ProgressView {
             this.progressItems[next].classList.contains(this.className.progressActive);
     }
 
-    private setupContainer(container?: HTMLElement) {
+    private setupContainer(container?: Element) {
         if (container) {
             container.classList.add(this.className.progressContainer);
 
@@ -78,26 +78,46 @@ export default class ProgressView {
         return tag('div', { attr: { class: this.className.progressContainer } });
     }
 
-    private setupItems(stepsCount: number, container: HTMLElement): HTMLElement[] {
-        const c: HTMLElement[] = [];
+    private setupItems(stepsCount: number, container: Element): Element[] {
+        const self = this;
+        const containerChildCount = container.children.length;
+        const containerHasChildren = !!containerChildCount;
 
-        while (c.length !== stepsCount) {
-            let el = tag('div', { attr: { class: this.className.progressItem } });
-            let num = c.length + 1;
+        return containerHasChildren ? tryUseExistingElems() : insertSimpleNumProgress();
 
-            el.textContent = num.toString();
+        function insertSimpleNumProgress(): Element[] {
+            return Array.prototype.map.call([...Array(4)], (v, i) => {
+                let el = addItemInfo(tag('div', {
+                    attr: { 
+                        class: self.className.progressItem 
+                    } 
+                }), i);
 
-            if (this.opts.clickHandler) {
-                el.addEventListener('click', ev => {
-                    if (this.opts.clickHandler) this.opts.clickHandler(num - 1);
-                });
-            }
+                el.textContent = (i + 1).toString();
 
-            c.push(el);
+                container.appendChild(el);
 
-            container.appendChild(el);
+                return el;
+            }) as Element[];
         }
 
-        return c;
+        function tryUseExistingElems(): Element[] {
+            if (containerChildCount !== stepsCount) {
+                throw new Error('Progress container children count must be same as steps count or 0!!');
+            }
+
+            return Array.prototype.map.call(container.children, addItemInfo) as Element[];
+        }
+
+        function addItemInfo(el: Element, index: number): Element {
+            if (self.opts.clickHandler) {
+                let h = self.opts.clickHandler;
+                el.addEventListener('click', ev => h(index));
+            }
+
+            el.classList.add(self.className.progressItem);
+
+            return el;
+        }
     }
 }
