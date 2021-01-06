@@ -54,7 +54,7 @@ export default class StepperView extends StepperBase {
     private setupProgress(): ProgressView {
         const p = new ProgressView(this.getStepsCount(), this.opts.className, this.opts.progress);
 
-        if (this.opts.progress && !this.opts.progress.container) {
+        if (!this.opts.progress?.container) {
             this.container.insertAdjacentElement('beforebegin', p.getHTML());
         }
 
