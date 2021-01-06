@@ -44,7 +44,7 @@ export default class StepperBase {
 
     protected setStep(index: number): Step[] {
         if (!this.isStepIndexValid(index) || !this.isStepInRange(index)) {
-            return [this.currentStep];
+            return [];
         }
         
         this.prevStep = this.currentStep;
@@ -62,9 +62,7 @@ export default class StepperBase {
          */
         const ok = typeof index === 'number' && isFinite(index);
 
-        if (!ok) {
-            console.warn(`[Stepper.js] supplied step value is not a number`);
-        }
+        if (!ok) console.warn(`[Stepper.js] supplied step value is not a number`);
 
         return ok;
     }
@@ -75,9 +73,7 @@ export default class StepperBase {
          */
         const ok = index >= 0 && index <= this.getStepsCount() - 1;
 
-        if (!ok) {
-            console.warn(`[Stepper.js] cannot perform step change to index: ${index}`);
-        }
+        if (!ok) console.warn(`[Stepper.js] cannot perform step change to index: ${index}`);
 
         return ok; 
     }
