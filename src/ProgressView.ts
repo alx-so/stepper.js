@@ -86,7 +86,7 @@ export default class ProgressView {
         return containerHasChildren ? tryUseExistingElems() : insertSimpleNumProgress();
 
         function insertSimpleNumProgress(): Element[] {
-            return Array.prototype.map.call([...Array(4)], (v, i) => {
+            return Array.prototype.map.call([...Array(stepsCount)], (v, i) => {
                 let el = addItemInfo(tag('div', {
                     attr: { 
                         class: self.className.progressItem 
