@@ -7,8 +7,8 @@
     "test": "tests"
   },
   "scripts": {
-    "dev": "./node_modules/.bin/rollup.cmd -c rollup.config.js -w --dev",
-    "dist": "./node_modules/.bin/rollup.cmd -c rollup.config.js -w --dist"
+    "dev": "./node_modules/.bin/rollup -c rollup.config.js -w --dev",
+    "dist": "./node_modules/.bin/rollup -c rollup.config.js -w --dist"
   },
   "repository": {
     "type": "git",
