@@ -67,7 +67,9 @@ export default class Stepper {
         this.stepperView = new StepperView(container,
             this.composeStepperViewOpts(container.children.length, this.options, this.state));
 
-        this.state.step = this.stepperView.getCurrentStep();    
+        this.state.step = this.stepperView.getCurrentStep();
+        
+        this.cacheId = opts.cacheId || 'stepper_data';
 
         this.onStateChange(this.handleStateChange.bind(this));
 

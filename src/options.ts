@@ -17,6 +17,7 @@ export interface Options {
         navEnabled?: boolean
     };
     cache?: boolean;
+    cacheId?: string;
     urlParam?: string,
     validateStepChange?: (prev: Step, next: Step) => boolean;
 }
