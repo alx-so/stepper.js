@@ -59,18 +59,20 @@ export default class Stepper {
 
     public setup(container: HTMLElement, opts: Options): void {
         dispatchEvent(container, EventName.beforeSetup);
+        
+        this.cacheId = opts.cacheId || 'stepper_data';
 
         this.options = { ...DefOptions, ...opts, 
             className: { ...DefOptions.className, ...opts.className }
         };
+
         this.state = this.getInitialState();
+
         this.stepperView = new StepperView(container,
             this.composeStepperViewOpts(container.children.length, this.options, this.state));
 
         this.state.step = this.stepperView.getCurrentStep();
         
-        this.cacheId = opts.cacheId || 'stepper_data';
-
         this.onStateChange(this.handleStateChange.bind(this));
 
         this.dispatchStepperEvent(EventName.afterSetup);
