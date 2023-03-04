@@ -1,7 +1,6 @@
 ---
 permalink: /test.html
-stylesheets
-   - main.css
+stylesheet: main.css
 ---
 
 
